@@ -1,4 +1,4 @@
-/* boot.s
+ /* boot.s
  * Assembler startup file for the STM32
  * Ford Seidel  2019-01-31
  * Ronit Banerjee
@@ -13,8 +13,8 @@
 .global ivt
 ivt:
 @ TODO: add the stack and the reset handler addr here.
-.word   0                   /* stack top address */
-.word   0                   /* 1 Reset */
+.word   __stack_top         /* stack top address */
+.word   _reset_             /* 1 Reset */
 .word   _nmi_               /* 2 NMI */
 .word   _hard_fault_        /* 3 Hard Fault */
 .word   _mm_fault_          /* 4 MM Fault */
@@ -135,9 +135,29 @@ _spi1_handler:
 .thumb_func
 .global _reset_
 _reset_:
-@ Write your boot loader here!
-@ The bkpt instruction puts a breakpoint that fires an exception that
-@ can be caught if a debugger is attached.
+  ldr r0, = _erodata	/*address of initialized values in flash*/
+  ldr r1, = _sdata	/*the start of SRAM*/
+  ldr r2, = _edata	/*the end of SRAM*/
+
+copy_loop:
+  cmp r1, r2
+  bge copy_done
+  ldr r3, [r0], #4
+  str r3, [r1], #4
+  b copy_loop
+
+copy_done:
+  ldr r1, = _sbss
+  ldr r2, = _ebss
+  movs r3, #0
+
+zero_bss:
+  cmp r1, r2
+  bge start_kernel
+  str r3, [r1], #4
+  b zero_bss
+  
+start_kernel:
   bl kernel_main
   bkpt
 
