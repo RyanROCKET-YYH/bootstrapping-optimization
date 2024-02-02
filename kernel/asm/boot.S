@@ -135,25 +135,25 @@ _spi1_handler:
 .thumb_func
 .global _reset_
 _reset_:
-  ldr r0, = _erodata	/*address of initialized values in flash*/
-  ldr r1, = _sdata	/*the start of SRAM*/
-  ldr r2, = _edata	/*the end of SRAM*/
+  ldr r0, = _erodata	    /* address of initialized values in flash */
+  ldr r1, = _sdata	      /* the start of SRAM */
+  ldr r2, = _edata	      /* the end of SRAM */
 
 copy_loop:
-  cmp r1, r2
-  bge copy_done
-  ldr r3, [r0], #4
-  str r3, [r1], #4
-  b copy_loop
+  cmp r1, r2              /* if r1 >= r2, all variables have been copied */
+  bge copy_done          
+  ldr r3, [r0], #4        /* load r0 to r3 and post increment by 4 */
+  str r3, [r1], #4        /* store r3 to r1 so that data to SRAM */
+  b copy_loop             /* repeat all values are copied */
 
 copy_done:
-  ldr r1, = _sbss
+  ldr r1, = _sbss         /* consider zero_bss by loading _sbss and _ebss */
   ldr r2, = _ebss
   movs r3, #0
 
 zero_bss:
   cmp r1, r2
-  bge start_kernel
+  bge start_kernel        /* if r1 >= r2, .bss section is set to 0 *./
   str r3, [r1], #4
   b zero_bss
   
