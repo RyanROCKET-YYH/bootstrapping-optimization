@@ -57,10 +57,8 @@ func:
 	@ condense the logic of this function, and remember, branches are expensive
 	mov 	r3, #11
 	mul 	r0, r3, r0
-
 	mov 	r3, #33
 	mul		r3, r3, r1
-	
 	subs	r0, r0, r3
 	bx		lr
 
@@ -73,61 +71,47 @@ optimize_me:
 	mov		r6, r0
 	str		r6, [r7, #12]
 	mov		r5, #0
-	b		.L4
+	b 		.L7
+
 .L7:
-	tst		r5, #1				@ changed from mov and ands operation
-	bne		.L5
-
+	tst		r5, #1				@ changed from mov and ands operation	check if r5 is even
+	bne		.L5					@ branches to L5 if odd
 	mov 	r2, #3
-
-	lsls	r3, r5, #1
-	add		r3, r3, r6
-	
-	lsls	r1, r5, #1
-	add		r1, r1, r6
-	ldrh	r1, [r1]
-
+	lsls	r3, r5, #1			@ mutiply 2
+	add		r3, r3, r6			@ add r3 with base address in r6
+	ldrh	r1, [r3]
 	smulbb	r2, r1, r2
-	uxth	r2, r2
 	strh	r2, [r3]	@ movhi
 	adds	r5, r5, #1
-	b		.L4
+	cmp		r5, #500			@ yf r5 is less than 500, loop back to L7
+	blt		.L7
+	movs	r8, #0
+	b		.L9
+
 .L5:
-
-	mov 	r2, #5
-
-	lsls	r3, r5, #1
-	add		r3, r3, r6
-
-	lsls	r1, r5, #1
-	add		r1, r1, r6
-	ldrh	r1, [r1]
+	mov 	r2, #5				@ multiplier is 5 this time
+	lsls	r3, r5, #1			@ mutiply 2
+	add		r3, r3, r6			@ add r3 with base address in r6
 	
+	ldrh	r1, [r3]
 	smulbb	r2, r1, r2
-	uxth	r2, r2
 	strh	r2, [r3]	@ movhi
 	adds	r5, r5, #1
-.L4:
 	cmp		r5, #500
 	blt		.L7
-	movs	r3, #0
-	str		r3, [r7, #16]
-	b		.L8
+	movs	r8, #0
+
 .L9:
-	ldr		r3, [r7, #16]
-	lsls	r3, r3, #2
-	
+	lsls	r3, r8, #2
 	add		r3, r6, r3
 	ldrh	r3, [r3]	@ movhi
 	strh	r3, [r7, #10]	@ movhi
-	ldr		r3, [r7, #16]
-	lsls	r3, r3, #2
+	lsls	r3, r8, #2
 	adds	r3, r3, #2
 	add		r3, r3, r6
 	ldrh	r3, [r3]	@ movhi
 	strh	r3, [r7, #8]	@ movhi
-	ldr		r3, [r7, #16]
-	lsls	r3, r3, #2
+	lsls	r3, r8, #2
 	ldr		r2, [r7, #12]
 	adds	r4, r2, r3
 	ldrh	r2, [r7, #10]
@@ -136,19 +120,13 @@ optimize_me:
 	mov		r1, r3
 	bl		func
 	mov		r2, r0
-
 	movw	r3, #:lower16:deadbeef
 	movt	r3, #:upper16:deadbeef
 	ldr		r3, [r3]
-
 	add		r3, r3, r2
 	str		r3, [r4]
-	ldr		r3, [r7, #16]
-	adds	r3, r3, #1
-	str		r3, [r7, #16]
-.L8:
-	ldr		r3, [r7, #16]
-	cmp		r3, #249
+	adds	r8, r8, #1
+	cmp		r8, #249
 	ble		.L9
 	adds	r7, r7, #28
 	mov		sp, r7
