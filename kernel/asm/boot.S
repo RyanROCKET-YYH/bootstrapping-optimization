@@ -153,7 +153,7 @@ copy_done:
 
 zero_bss:
   cmp r1, r2
-  bge start_kernel        /* if r1 >= r2, .bss section is set to 0 *./
+  bge start_kernel        /* if r1 >= r2, .bss section is set to 0 */
   str r3, [r1], #4
   b zero_bss
   
@@ -170,3 +170,4 @@ _sys_tick_asm_:
 .global _svc_asm_handler_
 _svc_asm_handler_:
   bkpt
+
