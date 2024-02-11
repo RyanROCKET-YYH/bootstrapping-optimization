@@ -15,36 +15,27 @@ deadbeef:
 	.thumb_func
 optimize_me:
 	push	{r4, lr}
-	mov		r6, r0
-	movs	r5, #0
-	mov		r7, #3
-	mov		r8, #5
-	ldr     r9, =deadbeef       @ Load address of deadbeef
+	movs	r4, #0				@ loop index
+	mov	r3, #3
+	mov	r5, #5
+	ldr     r2, =deadbeef       @ Load address of deadbeef
 	
 .L7:
-	adds 	r3, r6, r5, lsl #1		@ r3 = r6 + (r5 << 1)	the first element
-	ldrh	r1, [r3]
-	smulbb	r1, r1, r7				@ *3
-	strh	r1, [r3]				@ necessary？
-	
-	mov 	r4, #11
-	mul 	r10, r4, r1				@ * 11
-
-	adds	r5, r5, #1				@ increase index
-	adds 	r11, r6, r5, lsl #1		@ calculate second index
-	ldrh	r2, [r11]
-	smulbb	r2, r2, r8
-	strh	r2, [r11]
-
-	mov 	r4, #33
-	mul 	r12, r4, r2				@ * 33
-	subs 	r12, r10, r12
-
-	ldr		r0, [r9]
-	add 	r0, r0, r12
-	str 	r0, [r3]
-	adds	r5, r5, #1
-	cmp 	r5, #500
+	adds 	r1, r0, r4, lsl #1		@ r3 = r6 + (r5 << 1)	the first element
+	ldrh	r6, [r1]
+	smulbb	r6, r6, r3			@ *3
+	mov 	r7, #11
+	mul 	r6, r7				@ * 11
+	adds	r4, #1				@ increase index
+	ldrh	r7, [r1, #2]
+	smulbb	r7, r7, r5
+	mov 	r8, #33
+	mul 	r7, r8				@ * 33
+	subs 	r6, r7
+	ldr	r7, [r2]
+	add 	r7, r6
+	str 	r7, [r1]
+	adds	r4, #1
+	cmp 	r4, #500
 	blt 	.L7
-	movs	r5, #0
-	pop		{r4, pc}
+	pop	{r4, pc}
