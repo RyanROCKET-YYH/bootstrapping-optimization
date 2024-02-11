@@ -15,27 +15,25 @@ deadbeef:
 	.thumb_func
 optimize_me:
 	push	{r4, lr}
-	movs	r4, #0				@ loop index
-	mov	r3, #3
-	mov	r5, #5
-	ldr     r2, =deadbeef       @ Load address of deadbeef
+	movs	r4, #498			@ loop index
+	mov	r3, #33
+	mov	r5, #165
+	ldr     r2, =deadbeef       		@ Load address of deadbeef
 	
 .L7:
 	adds 	r1, r0, r4, lsl #1		@ r3 = r6 + (r5 << 1)	the first element
 	ldrh	r6, [r1]
 	smulbb	r6, r6, r3			@ *3
-	mov 	r7, #11
-	mul 	r6, r7				@ * 11
-	adds	r4, #1				@ increase index
+
 	ldrh	r7, [r1, #2]
 	smulbb	r7, r7, r5
-	mov 	r8, #33
-	mul 	r7, r8				@ * 33
+
 	subs 	r6, r7
 	ldr	r7, [r2]
 	add 	r7, r6
 	str 	r7, [r1]
-	adds	r4, #1
-	cmp 	r4, #500
-	blt 	.L7
+	
+	subs	r4, #2
+	cmp 	r4, #0
+	bge 	.L7
 	pop	{r4, pc}
